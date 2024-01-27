@@ -1,7 +1,6 @@
 from keras.models import load_model  # TensorFlow is required for Keras to work
 import cv2  # Install opencv-python
 import numpy as np
-from StarPlus.HandDetector import HandDetector
 
 # Disable scientific notation for clarity
 np.set_printoptions(suppress=True)
@@ -14,34 +13,29 @@ class_names = open("./model/labels.txt", "r").readlines()
 
 # CAMERA can be 0 or 1 based on default camera of your computer
 camera = cv2.VideoCapture(0)
-handD = HandDetector()
+
 while True:
     # Grab the webcamera's image.
     ret, image = camera.read()
-    hands = handD.findHands(img=image,draw=False)
-    # Resize the raw image into (224-height,224-width) pixels
-    if hands:
-        bbox = hands[0]["bbox"]
-        print(bbox)
 
+    # Resize the raw image into (224-height,224-width) pixels
+    image = cv2.resize(image, (224, 224 ), interpolation=cv2.INTER_AREA)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray,(5,5),2)
 
     th3 = cv2.adaptiveThreshold(blur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY_INV,11,2)
-    ret, res = cv2.threshold(th3, 5, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-    
+    ret, image = cv2.threshold(th3, 70, 255, cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
     # Show the image in a window
-    cv2.imshow("Webcam Image", res)
-    
-    image = cv2.resize(res, (224, 224), interpolation=cv2.INTER_AREA)
+    cv2.imshow("Webcam Image", image)
+
     # Make the image a numpy array and reshape it to the models input shape.
-    res = np.asarray(res, dtype=np.float32).reshape(1, 224, 224, 3)
+    image = np.asarray(image, dtype=np.float32).reshape(1, 224, 224, 3)
 
     # Normalize the image array
-    res = (res / 127.5) - 1
+    image = (image / 127.5) - 1
 
     # Predicts the model
-    prediction = model.predict(res)
+    prediction = model.predict(image)
     index = np.argmax(prediction)
     class_name = class_names[index]
     confidence_score = prediction[0][index]
