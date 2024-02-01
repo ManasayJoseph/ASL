@@ -1,30 +1,30 @@
-# from spellchecker import SpellChecker
+from spellchecker import SpellChecker
 
-# spell = SpellChecker()
+spell = SpellChecker()
 
-# # find those words that may be misspelled
-# misspelled = spell.unknown(['bodu', 'is', 'hapenning', 'here'])
+# find those words that may be misspelled
+misspelled = spell.unknown(['bodu', 'is', 'hapenning', 'here'])
 
-# for word in misspelled:
-#     # Get the one `most likely` answer
-#     print(spell.correction(word))
+for word in misspelled:
+    # Get the one `most likely` answer
+    print(spell.correction(word))
 
-#     # Get a list of `likely` options
-#     # print(spell.candidates(word))
+    # Get a list of `likely` options
+    print(spell.candidates(word))
 
-import spacy
+# import spacy
 
-nlp = spacy.load("en_core_web_sm")
+# nlp = spacy.load("en_core_web_sm")
 
-def word_recommendation(text):
-    doc = nlp(text)
+# def word_recommendation(text):
+#     doc = nlp(text)
 
-    recommendations = []
-    for token in doc:
-        if token.is_alpha and not token.is_stop:
-            suggestions = [word.orth_ for word in token._.holmes.suggest()]
-            recommendations.append((token.text, suggestions))
+#     recommendations = []
+#     for token in doc:
+#         if token.is_alpha and not token.is_stop:
+#             suggestions = [word.orth_ for word in token._.holmes.suggest()]
+#             recommendations.append((token.text, suggestions))
 
-    return recommendations
+#     return recommendations
 
-word_recommendation("happeni")
+# word_recommendation("happeni")
