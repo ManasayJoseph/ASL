@@ -76,8 +76,11 @@ while True:
         word_list.append(predicted_character)
         word="".join(word_list)
         candids = spell.candidates(word)
-        list_o_words = word_list[0:3]
-        
+        list_o_words = candids[0:3]
+        x , y = 10 , 350 
+        for candid in candids:
+            cv2.putText(frame, word, (x, y ) , font , 3 , (0 , 255 , 0 ) , 2 , cv2.LINE_AA)
+            x + 50 
         print(word)
         # Get the one `most likely` answer
         print(spell.correction(word))
@@ -85,7 +88,7 @@ while True:
         # Get a list of `likely` options
         print(spell.candidates(word))
     cv2.putText(frame, word, (10,450), font, 3, (0, 255, 0), 2, cv2.LINE_AA)
-
+    
         
     if cv2.waitKey(1) == ord('q'):
         break
