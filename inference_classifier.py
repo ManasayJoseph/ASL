@@ -3,11 +3,16 @@ import pickle
 import cv2
 import mediapipe as mp
 import numpy as np
+from spellchecker import SpellChecker
+
+spell = SpellChecker()
 
 model_dict = pickle.load(open('./model.p', 'rb'))
 model = model_dict['model']
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('http://192.168.1.75:4747/video')
+
+font = cv2.FONT_HERSHEY_SIMPLEX
 
 mp_hands = mp.solutions.hands
 mp_drawing = mp.solutions.drawing_utils
@@ -16,6 +21,8 @@ mp_drawing_styles = mp.solutions.drawing_styles
 hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3,max_num_hands=1)
 labels_dict = {0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F',6: 'G', 7: 'H', 8: 'I', 9: 'K', 10: 'L', 11: 'M', 12: 'N', 13: 'O', 14: 'P', 15: 'Q', 16: 'R', 17: 'S', 18: 'T', 19: 'U', 20: 'V', 21: 'W', 22: 'X', 23: 'Y'}
 #  
+word = ""
+word_list = []
 while True:
 
     data_aux = []
@@ -65,9 +72,27 @@ while True:
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 0), 4)
         cv2.putText(frame, predicted_character, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 0, 0), 3,
                     cv2.LINE_AA)
+    if cv2.waitKey(1) == ord(' '):
+        word_list.append(predicted_character)
+        word="".join(word_list)
+        candids = spell.candidates(word)
+        list_o_words = word_list[0:3]
+        
+        print(word)
+        # Get the one `most likely` answer
+        print(spell.correction(word))
+        print(word_list)
+        # Get a list of `likely` options
+        print(spell.candidates(word))
+    cv2.putText(frame, word, (10,450), font, 3, (0, 255, 0), 2, cv2.LINE_AA)
 
+        
+    if cv2.waitKey(1) == ord('q'):
+        break
     cv2.imshow('frame', frame)
-    cv2.waitKey(1)
+ 
+
+
 
 
 cap.release()
